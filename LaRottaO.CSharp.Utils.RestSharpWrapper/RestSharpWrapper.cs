@@ -9,13 +9,11 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
 {
     public class RestSharpWrapper
     {
-        public IRestResponse MakeRestRequest(Method requiredMethod, String endPoint, List<String[]> headersList, List<String[]> parametersList, string body, DataFormat requiredFormat)
+        public IRestResponse RestRequest(Method requiredMethod, String endPoint, List<String[]> headersList, List<String[]> parametersList, string body, DataFormat requiredFormat)
         {
             try
             {
                 RestClient client = new RestClient();
-
-                #region agrega headers
 
                 if (headersList != null)
                 {
@@ -31,18 +29,16 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
 
                 if (parametersList != null)
                 {
-                    foreach (String[] parametro in parametersList)
+                    foreach (String[] parameter in parametersList)
                     {
-                        if (String.IsNullOrEmpty(parametro[0]) || String.IsNullOrEmpty(parametro[1]))
+                        if (String.IsNullOrEmpty(parameter[0]) || String.IsNullOrEmpty(parameter[1]))
                         {
                             continue;
                         }
 
-                        client.AddDefaultParameter(parametro[0], parametro[1]);
+                        client.AddDefaultParameter(parameter[0], parameter[1]);
                     }
                 }
-
-                #endregion agrega headers
 
                 client.BaseUrl = new Uri(endPoint);
 
@@ -53,42 +49,42 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
                     request.AddJsonBody(body);
                 }
 
-                IRestResponse respuestaConsulta;
+                IRestResponse iRestResponse;
 
                 switch (requiredMethod)
                 {
                     case Method.GET:
 
-                        respuestaConsulta = client.Get(request);
+                        iRestResponse = client.Get(request);
 
                         break;
 
                     case Method.POST:
 
-                        respuestaConsulta = client.Post(request);
+                        iRestResponse = client.Post(request);
 
                         break;
 
                     case Method.PATCH:
 
-                        respuestaConsulta = client.Patch(request);
+                        iRestResponse = client.Patch(request);
 
                         break;
 
                     default:
 
                         Console.WriteLine("Unimplemented Method: " + requiredMethod);
-                        respuestaConsulta = null;
+                        iRestResponse = null;
 
                         break;
                 }
 
-                if (respuestaConsulta != null && respuestaConsulta.Content.Contains("Try again in a few seconds"))
+                if (iRestResponse != null && iRestResponse.Content.Contains("Try again in a few seconds"))
                 {
-                    return MakeRestRequest(requiredMethod, endPoint, headersList, parametersList, body, requiredFormat);
+                    return RestRequest(requiredMethod, endPoint, headersList, parametersList, body, requiredFormat);
                 }
 
-                return respuestaConsulta;
+                return iRestResponse;
             }
             catch (Exception ex)
             {
