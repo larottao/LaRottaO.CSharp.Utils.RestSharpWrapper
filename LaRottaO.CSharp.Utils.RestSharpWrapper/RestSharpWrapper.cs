@@ -9,89 +9,87 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
 {
     public class RestSharpWrapper
     {
-        public IRestResponse RestRequest(Method requiredMethod, String endPoint, List<String[]> headersList, List<String[]> parametersList, string body, DataFormat requiredFormat)
+        public Task<IRestResponse> RestRequest(Method requiredMethod, String endPoint, List<String[]> headersList, List<String[]> parametersList, string body, DataFormat requiredFormat)
         {
-            try
+            return Task.Run(() =>
             {
-                RestClient client = new RestClient();
-
-                if (headersList != null)
+                try
                 {
-                    foreach (String[] header in headersList)
+                    RestClient client = new RestClient();
+
+                    if (headersList != null)
                     {
-                        if (String.IsNullOrEmpty(header[0]) || String.IsNullOrEmpty(header[1]))
+                        foreach (String[] header in headersList)
                         {
-                            continue;
+                            if (String.IsNullOrEmpty(header[0]) || String.IsNullOrEmpty(header[1]))
+                            {
+                                continue;
+                            }
+                            client.AddDefaultHeader(header[0], header[1]);
                         }
-                        client.AddDefaultHeader(header[0], header[1]);
                     }
-                }
 
-                if (parametersList != null)
-                {
-                    foreach (String[] parameter in parametersList)
+                    if (parametersList != null)
                     {
-                        if (String.IsNullOrEmpty(parameter[0]) || String.IsNullOrEmpty(parameter[1]))
+                        foreach (String[] parameter in parametersList)
                         {
-                            continue;
+                            if (String.IsNullOrEmpty(parameter[0]) || String.IsNullOrEmpty(parameter[1]))
+                            {
+                                continue;
+                            }
+
+                            client.AddDefaultParameter(parameter[0], parameter[1]);
                         }
-
-                        client.AddDefaultParameter(parameter[0], parameter[1]);
                     }
+
+                    client.BaseUrl = new Uri(endPoint);
+
+                    var request = new RestRequest();
+
+                    if (body != null)
+                    {
+                        request.AddJsonBody(body);
+                    }
+
+                    IRestResponse iRestResponse;
+
+                    switch (requiredMethod)
+                    {
+                        case Method.GET:
+
+                            iRestResponse = client.Get(request);
+
+                            break;
+
+                        case Method.POST:
+
+                            iRestResponse = client.Post(request);
+
+                            break;
+
+                        case Method.PATCH:
+
+                            iRestResponse = client.Patch(request);
+
+                            break;
+
+                        default:
+
+                            Console.WriteLine("Unimplemented Method: " + requiredMethod);
+                            iRestResponse = null;
+
+                            break;
+                    }
+
+                    return iRestResponse;
                 }
-
-                client.BaseUrl = new Uri(endPoint);
-
-                var request = new RestRequest();
-
-                if (body != null)
+                catch (Exception ex)
                 {
-                    request.AddJsonBody(body);
+                    Console.WriteLine(ex.Message);
+
+                    return null;
                 }
-
-                IRestResponse iRestResponse;
-
-                switch (requiredMethod)
-                {
-                    case Method.GET:
-
-                        iRestResponse = client.Get(request);
-
-                        break;
-
-                    case Method.POST:
-
-                        iRestResponse = client.Post(request);
-
-                        break;
-
-                    case Method.PATCH:
-
-                        iRestResponse = client.Patch(request);
-
-                        break;
-
-                    default:
-
-                        Console.WriteLine("Unimplemented Method: " + requiredMethod);
-                        iRestResponse = null;
-
-                        break;
-                }
-
-                if (iRestResponse != null && iRestResponse.Content.Contains("Try again in a few seconds"))
-                {
-                    return RestRequest(requiredMethod, endPoint, headersList, parametersList, body, requiredFormat);
-                }
-
-                return iRestResponse;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-
-                return null;
-            }
+            });
         }
     }
 }
