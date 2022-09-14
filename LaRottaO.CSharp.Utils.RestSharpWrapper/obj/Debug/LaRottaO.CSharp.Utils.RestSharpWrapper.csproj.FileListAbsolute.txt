@@ -1,0 +1,9 @@
+C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\bin\Debug\LaRottaO.CSharp.Utils.RestSharpWrapper.dll
+C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\bin\Debug\LaRottaO.CSharp.Utils.RestSharpWrapper.pdb
+C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\bin\Debug\RestSharp.dll
+C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\bin\Debug\RestSharp.xml
+C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\obj\Debug\LaRottaO.CSharp.Utils.RestSharpWrapper.csproj.AssemblyReference.cache
+C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\obj\Debug\LaRottaO.CSharp.Utils.RestSharpWrapper.csproj.CoreCompileInputs.cache
+C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\obj\Debug\LaRottaO.CSharp.Utils.RestSharpWrapper.csproj.CopyComplete
+C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\obj\Debug\LaRottaO.CSharp.Utils.RestSharpWrapper.dll
+C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\obj\Debug\LaRottaO.CSharp.Utils.RestSharpWrapper.pdb
