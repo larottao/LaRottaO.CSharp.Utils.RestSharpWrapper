@@ -10,11 +10,23 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
 {
     public class RestSharpWrapper
     {
-        public async Task<IRestResponse> restRequest(Method requiredMethod, String endPoint, List<String[]> headersList, List<String[]> parametersList, string body, DataFormat requiredFormat, Boolean checkSSL = false)
+        private RestClient client = new RestClient();
+
+        public async Task<CookieContainer> getCookieContainer()
+        {
+            return client.CookieContainer;
+        }
+
+        public async Task<IRestResponse> restRequest(Method requiredMethod, String endPoint, List<String[]> headersList, List<String[]> parametersList, string body, DataFormat requiredFormat, Boolean checkSSL = false, Boolean createNewInstanceOnEachCall = true)
         {
             try
             {
-                RestClient client = new RestClient();
+                if (createNewInstanceOnEachCall)
+                {
+                    client = new RestClient();
+                }
+
+                client.CookieContainer = new System.Net.CookieContainer();
 
                 //Prevents the error: RestSharp Could not establish trust relationship for the SSL/TLS secure channel
 

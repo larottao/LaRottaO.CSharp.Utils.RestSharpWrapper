@@ -1,0 +1,14 @@
+C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\bin\Release\LaRottaO.CSharp.Utils.RestSharpWrapper.dll
+C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\bin\Release\LaRottaO.CSharp.Utils.RestSharpWrapper.pdb
+C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\bin\Release\RestSharp.dll
+C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\bin\Release\System.Runtime.CompilerServices.Unsafe.dll
+C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\bin\Release\System.Text.Encodings.Web.dll
+C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\bin\Release\System.Buffers.dll
+C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\bin\Release\RestSharp.xml
+C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\bin\Release\System.Runtime.CompilerServices.Unsafe.xml
+C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\bin\Release\System.Text.Encodings.Web.xml
+C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\obj\Release\LaRottaO.CSharp.Utils.RestSharpWrapper.csproj.AssemblyReference.cache
+C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\obj\Release\LaRottaO.CSharp.Utils.RestSharpWrapper.csproj.CoreCompileInputs.cache
+C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\obj\Release\LaRottaO.CSharp.Utils.RestSharpWrapper.csproj.CopyComplete
+C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\obj\Release\LaRottaO.CSharp.Utils.RestSharpWrapper.dll
+C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\obj\Release\LaRottaO.CSharp.Utils.RestSharpWrapper.pdb
