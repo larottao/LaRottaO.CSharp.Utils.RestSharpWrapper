@@ -17,7 +17,7 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
             return client.CookieContainer;
         }
 
-        public async Task<IRestResponse> restRequest(Method requiredMethod, String endPoint, List<String[]> headersList, List<String[]> parametersList, string body, DataFormat requiredFormat, Boolean checkSSL = false, Boolean createNewInstanceOnEachCall = true)
+        public async Task<IRestResponse> restRequest(Method requiredMethod, String endPoint, List<String[]> headersList, List<String[]> defaultParametersList, List<String[]> queryParametersList, string body, DataFormat requiredFormat, Boolean checkSSL = false, Boolean createNewInstanceOnEachCall = true)
         {
             try
             {
@@ -50,9 +50,9 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
                     }
                 }
 
-                if (parametersList != null)
+                if (defaultParametersList != null)
                 {
-                    foreach (String[] parameter in parametersList)
+                    foreach (String[] parameter in defaultParametersList)
                     {
                         if (String.IsNullOrEmpty(parameter[0]) || String.IsNullOrEmpty(parameter[1]))
                         {
@@ -70,6 +70,19 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
                 if (body != null)
                 {
                     request.AddJsonBody(body);
+                }
+
+                if (queryParametersList != null)
+                {
+                    foreach (String[] parameter in queryParametersList)
+                    {
+                        if (String.IsNullOrEmpty(parameter[0]) || String.IsNullOrEmpty(parameter[1]))
+                        {
+                            continue;
+                        }
+
+                        request.AddQueryParameter(parameter[0], parameter[1]);
+                    }
                 }
 
                 IRestResponse iRestResponse;
