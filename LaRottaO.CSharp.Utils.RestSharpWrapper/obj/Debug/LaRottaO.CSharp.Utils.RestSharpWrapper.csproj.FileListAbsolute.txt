@@ -12,3 +12,13 @@ C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.Res
 C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\bin\Debug\System.Buffers.dll
 C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
 C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\bin\Debug\System.Text.Encodings.Web.xml
+C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\bin\Debug\LaRottaO.CSharp.Utils.RestSharpWrapper.dll.config
+C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\bin\Debug\Microsoft.Bcl.AsyncInterfaces.dll
+C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\bin\Debug\System.Memory.dll
+C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\bin\Debug\System.Text.Json.dll
+C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\bin\Debug\System.Threading.Tasks.Extensions.dll
+C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\bin\Debug\System.Numerics.Vectors.dll
+C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\bin\Debug\System.ValueTuple.dll
+C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\bin\Debug\Microsoft.Bcl.AsyncInterfaces.xml
+C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\bin\Debug\System.Memory.xml
+C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\bin\Debug\System.Text.Json.xml

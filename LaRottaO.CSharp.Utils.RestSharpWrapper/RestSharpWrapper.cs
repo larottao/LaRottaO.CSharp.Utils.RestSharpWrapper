@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -17,17 +18,26 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
             return client.CookieContainer;
         }
 
-        public async Task<IRestResponse> restRequest(Method requiredMethod, String endPoint, List<String[]> headersList, List<String[]> defaultParametersList, List<String[]> queryParametersList, string body, DataFormat requiredFormat, Boolean checkSSL = false, Boolean createNewInstanceOnEachCall = true)
+        public enum RequiredHttpMethod
+        { GET, POST, PATCH, PUT, DELETE }
+
+        public async Task<RestSharpResponse> restRequest(RequiredHttpMethod requiredMethod, String endPointUrl, List<String[]> headersList, List<String[]> defaultParametersList, List<String[]> queryParametersList, string body, Boolean checkSSL = false, Boolean createNewInstanceOnEachCall = true)
         {
+            RestSharpResponse response = new RestSharpResponse();
+
+            response.success = false;
+
             try
+
             {
+                var options = new RestClientOptions(endPointUrl);
+
                 if (createNewInstanceOnEachCall)
                 {
-                    client = new RestClient();
+                    client = new RestClient(options);
                 }
 
-                client.CookieContainer = new System.Net.CookieContainer();
-
+                //client.CookieContainer = new System.Net.CookieContainer();
                 //Prevents the error: RestSharp Could not establish trust relationship for the SSL/TLS secure channel
 
                 if (!checkSSL)
@@ -35,8 +45,6 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
                     ServicePointManager.ServerCertificateValidationCallback +=
                           (sender, certificate, chain, sslPolicyErrors) => true;
                 }
-
-                //Exceute request
 
                 if (headersList != null)
                 {
@@ -63,8 +71,6 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
                     }
                 }
 
-                client.BaseUrl = new Uri(endPoint);
-
                 var request = new RestRequest();
 
                 if (body != null)
@@ -85,43 +91,57 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
                     }
                 }
 
-                IRestResponse iRestResponse;
+                RestResponse iRestResponse;
 
                 switch (requiredMethod)
                 {
-                    case Method.GET:
+                    case RequiredHttpMethod.GET:
 
                         iRestResponse = client.Get(request);
 
                         break;
 
-                    case Method.POST:
+                    case RequiredHttpMethod.POST:
 
                         iRestResponse = client.Post(request);
 
                         break;
 
-                    case Method.PATCH:
+                    case RequiredHttpMethod.PATCH:
 
                         iRestResponse = client.Patch(request);
 
                         break;
 
-                    default:
+                    case RequiredHttpMethod.DELETE:
 
-                        Console.WriteLine("Unimplemented Method: " + requiredMethod);
-                        iRestResponse = null;
+                        iRestResponse = client.Delete(request);
 
                         break;
+
+                    case RequiredHttpMethod.PUT:
+
+                        iRestResponse = client.Put(request);
+
+                        break;
+
+                    default:
+
+                        response.success = false;
+                        response.details = "Unimplemented HTTP Method: " + requiredMethod;
+                        return response;
                 }
 
-                return iRestResponse;
+                response.success = true;
+                response.content = iRestResponse.Content;
+                return response;
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-
-                return null;
+                response.success = false;
+                response.content = "";
+                response.details = ex.ToString();
+                return response;
             }
         }
     }
