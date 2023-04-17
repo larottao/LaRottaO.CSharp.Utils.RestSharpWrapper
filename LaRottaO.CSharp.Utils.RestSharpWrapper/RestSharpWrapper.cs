@@ -91,7 +91,7 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
                     }
                 }
 
-                RestResponse iRestResponse;
+                RestResponse iRestResponse = null;
 
                 switch (requiredMethod)
                 {
@@ -124,16 +124,28 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
                         iRestResponse = client.Put(request);
 
                         break;
+                }
 
-                    default:
+                if (iRestResponse == null)
+                {
+                    response.success = false;
+                    response.details = "Received Http response was null";
+                    response.content = "";
+                    return response;
+                }
 
-                        response.success = false;
-                        response.details = "Unimplemented HTTP Method: " + requiredMethod;
-                        return response;
+                if (String.IsNullOrEmpty(iRestResponse.Content))
+                {
+                    response.success = true;
+                    response.details = "Received Http response has no content";
+                    response.content = "";
+                    return response;
                 }
 
                 response.success = true;
                 response.content = iRestResponse.Content;
+                response.code = Convert.ToInt32(iRestResponse.StatusCode.ToString());
+                response.details = "";
                 return response;
             }
             catch (Exception ex)
