@@ -142,9 +142,10 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
                     return response;
                 }
 
+                ;
                 response.success = true;
                 response.content = iRestResponse.Content;
-                response.code = Convert.ToInt32(iRestResponse.StatusCode.ToString());
+                response.httpStatusCode = iRestResponse.StatusCode.ToString();
                 response.details = "";
                 return response;
             }
