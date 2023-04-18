@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using RestSharp;
@@ -33,7 +35,25 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
             try
 
             {
-                var options = new RestClientOptions(endPointUrl);
+                RestClientOptions options;
+
+                if (checkSSL)
+                {
+                    options = new RestClientOptions(endPointUrl)
+                    {
+                        ThrowOnAnyError = true,
+                        MaxTimeout = -1
+                    };
+                }
+                else
+                {
+                    options = new RestClientOptions(endPointUrl)
+                    {
+                        ThrowOnAnyError = true,
+                        MaxTimeout = -1,
+                        RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
+                    };
+                }
 
                 if (createNewInstanceOnEachCall)
                 {
@@ -41,13 +61,6 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
                 }
 
                 //client.CookieContainer = new System.Net.CookieContainer();
-                //Prevents the error: RestSharp Could not establish trust relationship for the SSL/TLS secure channel
-
-                if (!checkSSL)
-                {
-                    ServicePointManager.ServerCertificateValidationCallback +=
-                          (sender, certificate, chain, sslPolicyErrors) => true;
-                }
 
                 if (headersList != null)
                 {
@@ -75,10 +88,9 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
                 }
 
                 var request = new RestRequest();
-
                 if (body != null)
                 {
-                    request.AddJsonBody(body);
+                    request.AddParameter("application/json", body, ParameterType.RequestBody);
                 }
 
                 if (queryParametersList != null)
@@ -125,28 +137,19 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
                     return response;
                 }
 
-                if (String.IsNullOrEmpty(iRestResponse.Content))
+                if (iRestResponse.ErrorException != null && !String.IsNullOrEmpty(iRestResponse.ErrorException.ToString()))
+                {
+                    response.success = false;
+                    response.details = iRestResponse.ErrorException.ToString();
+                }
+                else
                 {
                     response.success = true;
-                    response.details = "Received Http response has no content";
-                    response.content = "";
-                    return response;
+                    response.details = "";
                 }
 
                 response.content = iRestResponse.Content;
                 response.httpStatusCode = iRestResponse.StatusCode.ToString();
-
-                if (!iRestResponse.StatusCode.Equals(HttpStatusCode.OK))
-                {
-                    response.success = false;
-                    response.details = iRestResponse.StatusDescription;
-                    return response;
-                }
-
-                ;
-
-                response.success = true;
-                response.details = "";
 
                 return response;
             }
