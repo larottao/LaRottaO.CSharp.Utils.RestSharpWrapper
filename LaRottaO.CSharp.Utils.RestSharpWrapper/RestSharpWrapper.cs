@@ -23,9 +23,12 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
 
         public async Task<RestSharpResponse> restRequest(RequiredHttpMethod requiredMethod, String endPointUrl, List<String[]> headersList, List<String[]> defaultParametersList, List<String[]> queryParametersList, string body, Boolean checkSSL = false, Boolean createNewInstanceOnEachCall = true)
         {
-            RestSharpResponse response = new RestSharpResponse();
+            RestResponse iRestResponse = null;
 
+            RestSharpResponse response = new RestSharpResponse();
             response.success = false;
+            response.content = "";
+            response.details = "";
 
             try
 
@@ -91,38 +94,26 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
                     }
                 }
 
-                RestResponse iRestResponse = null;
-
                 switch (requiredMethod)
                 {
                     case RequiredHttpMethod.GET:
-
-                        iRestResponse = client.Get(request);
-
+                        iRestResponse = await client.ExecuteAsync(request, Method.Get);
                         break;
 
                     case RequiredHttpMethod.POST:
-
-                        iRestResponse = client.Post(request);
-
+                        iRestResponse = await client.ExecuteAsync(request, Method.Post);
                         break;
 
                     case RequiredHttpMethod.PATCH:
-
-                        iRestResponse = client.Patch(request);
-
+                        iRestResponse = await client.ExecuteAsync(request, Method.Patch);
                         break;
 
                     case RequiredHttpMethod.DELETE:
-
-                        iRestResponse = client.Delete(request);
-
+                        iRestResponse = await client.ExecuteAsync(request, Method.Delete);
                         break;
 
                     case RequiredHttpMethod.PUT:
-
-                        iRestResponse = client.Put(request);
-
+                        iRestResponse = await client.ExecuteAsync(request, Method.Put);
                         break;
                 }
 
@@ -142,18 +133,38 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
                     return response;
                 }
 
-                ;
-                response.success = true;
                 response.content = iRestResponse.Content;
                 response.httpStatusCode = iRestResponse.StatusCode.ToString();
+
+                if (!iRestResponse.StatusCode.Equals(HttpStatusCode.OK))
+                {
+                    response.success = false;
+                    response.details = iRestResponse.StatusDescription;
+                    return response;
+                }
+
+                ;
+
+                response.success = true;
                 response.details = "";
+
                 return response;
             }
             catch (Exception ex)
             {
                 response.success = false;
-                response.content = "";
                 response.details = ex.ToString();
+
+                if (iRestResponse != null && !String.IsNullOrEmpty(iRestResponse.Content))
+                {
+                    response.content = iRestResponse.Content;
+                }
+
+                if (iRestResponse != null)
+                {
+                    response.httpStatusCode = iRestResponse.StatusCode.ToString();
+                }
+
                 return response;
             }
         }
