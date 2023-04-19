@@ -25,7 +25,7 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
 
         public async Task<RestSharpResponse> restRequest(RequiredHttpMethod requiredMethod, String endPointUrl, List<String[]> headersList, List<String[]> defaultParametersList, List<String[]> queryParametersList, string body, Boolean checkSSL = false, Boolean createNewInstanceOnEachCall = true)
         {
-            RestResponse RestResponse = null;
+            RestResponse iRestResponse = null;
 
             RestSharpResponse response = new RestSharpResponse();
             response.success = false;
@@ -59,6 +59,8 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
                 {
                     client = new RestClient(options);
                 }
+
+                //client.CookieContainer = new System.Net.CookieContainer();
 
                 if (headersList != null)
                 {
@@ -107,27 +109,27 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
                 switch (requiredMethod)
                 {
                     case RequiredHttpMethod.GET:
-                        RestResponse = await client.ExecuteAsync(request, Method.Get);
+                        iRestResponse = await client.ExecuteAsync(request, Method.Get);
                         break;
 
                     case RequiredHttpMethod.POST:
-                        RestResponse = await client.ExecuteAsync(request, Method.Post);
+                        iRestResponse = await client.ExecuteAsync(request, Method.Post);
                         break;
 
                     case RequiredHttpMethod.PATCH:
-                        RestResponse = await client.ExecuteAsync(request, Method.Patch);
+                        iRestResponse = await client.ExecuteAsync(request, Method.Patch);
                         break;
 
                     case RequiredHttpMethod.DELETE:
-                        RestResponse = await client.ExecuteAsync(request, Method.Delete);
+                        iRestResponse = await client.ExecuteAsync(request, Method.Delete);
                         break;
 
                     case RequiredHttpMethod.PUT:
-                        RestResponse = await client.ExecuteAsync(request, Method.Put);
+                        iRestResponse = await client.ExecuteAsync(request, Method.Put);
                         break;
                 }
 
-                if (RestResponse == null)
+                if (iRestResponse == null)
                 {
                     response.success = false;
                     response.details = "Received Http response was null";
@@ -135,10 +137,10 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
                     return response;
                 }
 
-                if (RestResponse.ErrorException != null && !String.IsNullOrEmpty(RestResponse.ErrorException.ToString()))
+                if (iRestResponse.ErrorException != null && !String.IsNullOrEmpty(iRestResponse.ErrorException.ToString()))
                 {
                     response.success = false;
-                    response.details = RestResponse.ErrorException.ToString();
+                    response.details = iRestResponse.ErrorException.ToString();
                 }
                 else
                 {
@@ -146,8 +148,8 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
                     response.details = "";
                 }
 
-                response.content = RestResponse.Content;
-                response.httpStatusCode = RestResponse.StatusCode.ToString();
+                response.content = iRestResponse.Content;
+                response.httpStatusCode = iRestResponse.StatusCode.ToString();
 
                 return response;
             }
@@ -156,14 +158,14 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
                 response.success = false;
                 response.details = ex.ToString();
 
-                if (RestResponse != null && !String.IsNullOrEmpty(RestResponse.Content))
+                if (iRestResponse != null && !String.IsNullOrEmpty(iRestResponse.Content))
                 {
-                    response.content = RestResponse.Content;
+                    response.content = iRestResponse.Content;
                 }
 
-                if (RestResponse != null)
+                if (iRestResponse != null)
                 {
-                    response.httpStatusCode = RestResponse.StatusCode.ToString();
+                    response.httpStatusCode = iRestResponse.StatusCode.ToString();
                 }
 
                 return response;
