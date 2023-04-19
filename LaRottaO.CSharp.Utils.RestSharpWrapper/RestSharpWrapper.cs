@@ -35,22 +35,12 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
             try
 
             {
-                RestClientOptions options;
+                RestClientOptions options = new RestClientOptions();
 
-                if (checkSSL)
+                if (!checkSSL)
                 {
                     options = new RestClientOptions(endPointUrl)
                     {
-                        ThrowOnAnyError = true,
-                        MaxTimeout = -1
-                    };
-                }
-                else
-                {
-                    options = new RestClientOptions(endPointUrl)
-                    {
-                        ThrowOnAnyError = true,
-                        MaxTimeout = -1,
                         RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
                     };
                 }
