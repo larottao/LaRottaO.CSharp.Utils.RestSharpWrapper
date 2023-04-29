@@ -1,13 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net;
-using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Threading.Tasks;
 using RestSharp;
+
+/*
+RestSharpResponse wsResponse = await new RestSharpWrapper().restRequest(
+RestSharpWrapper.RequiredHttpMethod.GET, //REQUIRED METHOD
+url, //ENDPOINT URL
+null, //DEFAULT HEADERS
+null, //DEFAULT PARAMETERS
+null, //QUERY PARAMETERS
+null, //BODY
+RequiredBodyType.NO_BODY, //REQUIRED BODY TYPE
+false, //CHECK SSL
+true, //CREATE NEW INSTANCE
+10000, //TIMEOUT
+false); //SWALLOW ERRORS
+*/
 
 namespace LaRottaO.CSharp.Utils.RestSharpWrapper
 {
@@ -15,7 +26,7 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
     {
         private RestClient client = new RestClient();
 
-        public async Task<CookieContainer> getCookieContainer()
+        public CookieContainer getCookieContainer()
         {
             return client.CookieContainer;
         }
@@ -23,143 +34,196 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
         public enum RequiredHttpMethod
         { GET, POST, PATCH, PUT, DELETE }
 
-        public async Task<RestSharpResponse> restRequest(RequiredHttpMethod requiredMethod, String endPointUrl, List<String[]> headersList, List<String[]> defaultParametersList, List<String[]> queryParametersList, string body, Boolean checkSSL = false, Boolean createNewInstanceOnEachCall = true)
-        {
-            RestResponse iRestResponse = null;
+        public enum RequiredBodyType
+        { NO_BODY, APPLICATION_FORM_URL_ENCODED, APPLICATION_JSON, TEXT_PLAIN }
 
+        public async Task<RestSharpResponse> restRequest(RequiredHttpMethod requiredMethod, String endPointUrl, List<String[]> defaultHeadersList, List<String[]> defaultParametersList, List<String[]> queryParametersList, string body, RequiredBodyType requiredBodyType, Boolean checkSSL, int argTimeOutMs = 10000, Boolean argSwallowAnyErrors = false)
+        {
             RestSharpResponse response = new RestSharpResponse();
             response.success = false;
             response.content = "";
             response.details = "";
 
+            if (String.IsNullOrEmpty(endPointUrl))
+            {
+                response.success = false;
+                response.details = "Received Http response was null";
+                response.content = "";
+                return response;
+            }
+
+            RestResponse restSharpRestResponse = null;
+
             try
 
             {
-                RestClientOptions options = new RestClientOptions();
+                client.Options.BaseUrl = new Uri(endPointUrl);
 
                 if (!checkSSL)
                 {
-                    options = new RestClientOptions(endPointUrl)
-                    {
-                        RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
-                    };
+                    client.Options.RemoteCertificateValidationCallback  = (sender, certificate, chain, sslPolicyErrors) => true;
                 }
 
-                if (createNewInstanceOnEachCall)
-                {
-                    client = new RestClient(options);
-                }
+                client.Options.ThrowOnAnyError = argSwallowAnyErrors;
+                client.Options.MaxTimeout = argTimeOutMs;
 
-                //client.CookieContainer = new System.Net.CookieContainer();
-
-                if (headersList != null)
+                if (defaultHeadersList != null)
                 {
-                    foreach (String[] header in headersList)
+                    foreach (String[] defaultHeader in defaultHeadersList)
                     {
-                        if (String.IsNullOrEmpty(header[0]) || String.IsNullOrEmpty(header[1]))
+                        if (String.IsNullOrEmpty(defaultHeader[0]) || String.IsNullOrEmpty(defaultHeader[1]))
                         {
                             continue;
                         }
-                        client.AddDefaultHeader(header[0], header[1]);
+                        client.AddDefaultHeader(defaultHeader[0], defaultHeader[1]);
+                        Debug.WriteLine("Added defaultHeader: " + defaultHeader[0] + " " + defaultHeader[1]);
                     }
                 }
 
                 if (defaultParametersList != null)
                 {
-                    foreach (String[] parameter in defaultParametersList)
+                    foreach (String[] defaultParameter in defaultParametersList)
                     {
-                        if (String.IsNullOrEmpty(parameter[0]) || String.IsNullOrEmpty(parameter[1]))
+                        if (String.IsNullOrEmpty(defaultParameter[0]) || String.IsNullOrEmpty(defaultParameter[1]))
                         {
                             continue;
                         }
 
-                        client.AddDefaultParameter(parameter[0], parameter[1]);
+                        client.AddDefaultParameter(defaultParameter[0], defaultParameter[1]);
+                        Debug.WriteLine("Added defaultParameter: " + defaultParameter[0] + " " + defaultParameter[1]);
                     }
                 }
 
-                var request = new RestRequest();
-                if (body != null)
-                {
-                    request.AddParameter("application/json", body, ParameterType.RequestBody);
-                }
+                RestRequest restSharpRestRequest = new RestRequest();
 
                 if (queryParametersList != null)
                 {
-                    foreach (String[] parameter in queryParametersList)
+                    foreach (String[] queryParameter in queryParametersList)
                     {
-                        if (String.IsNullOrEmpty(parameter[0]) || String.IsNullOrEmpty(parameter[1]))
+                        if (String.IsNullOrEmpty(queryParameter[0]) || String.IsNullOrEmpty(queryParameter[1]))
                         {
                             continue;
                         }
 
-                        request.AddQueryParameter(parameter[0], parameter[1]);
+                        restSharpRestRequest.AddQueryParameter(queryParameter[0], queryParameter[1]);
+                        Debug.WriteLine("Added queryParameter: " + queryParameter[0] + " " + queryParameter[1]);
                     }
                 }
 
-                switch (requiredMethod)
+                switch (requiredBodyType)
                 {
-                    case RequiredHttpMethod.GET:
-                        iRestResponse = await client.ExecuteAsync(request, Method.Get);
+                    case RequiredBodyType.APPLICATION_JSON:
+
+                        restSharpRestRequest.AddParameter("application/json", body, ParameterType.RequestBody);
+
                         break;
 
-                    case RequiredHttpMethod.POST:
-                        iRestResponse = await client.ExecuteAsync(request, Method.Post);
+                    case RequiredBodyType.APPLICATION_FORM_URL_ENCODED:
+
+                        restSharpRestRequest.AddParameter("application/x-www-form-urlencoded", body, ParameterType.RequestBody);
+
                         break;
 
-                    case RequiredHttpMethod.PATCH:
-                        iRestResponse = await client.ExecuteAsync(request, Method.Patch);
-                        break;
+                    case RequiredBodyType.TEXT_PLAIN:
 
-                    case RequiredHttpMethod.DELETE:
-                        iRestResponse = await client.ExecuteAsync(request, Method.Delete);
-                        break;
+                        restSharpRestRequest.AddParameter("text/plain", body, ParameterType.RequestBody);
 
-                    case RequiredHttpMethod.PUT:
-                        iRestResponse = await client.ExecuteAsync(request, Method.Put);
                         break;
                 }
 
-                if (iRestResponse == null)
+                try
                 {
-                    response.success = false;
-                    response.details = "Received Http response was null";
-                    response.content = "";
-                    return response;
+                    switch (requiredMethod)
+                    {
+                        case RequiredHttpMethod.GET:
+                            restSharpRestResponse = await client.ExecuteAsync(restSharpRestRequest, Method.Get);
+                            break;
+
+                        case RequiredHttpMethod.POST:
+                            restSharpRestResponse = await client.ExecuteAsync(restSharpRestRequest, Method.Post);
+                            break;
+
+                        case RequiredHttpMethod.PATCH:
+                            restSharpRestResponse = await client.ExecuteAsync(restSharpRestRequest, Method.Patch);
+                            break;
+
+                        case RequiredHttpMethod.DELETE:
+                            restSharpRestResponse = await client.ExecuteAsync(restSharpRestRequest, Method.Delete);
+                            break;
+
+                        case RequiredHttpMethod.PUT:
+                            restSharpRestResponse = await client.ExecuteAsync(restSharpRestRequest, Method.Put);
+                            break;
+
+                        default:
+                            response.success = false;
+                            response.details = requiredMethod + " is not a valid RequiredHttpMethod";
+                            response.content = "";
+                            return response;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return errorHandling(restSharpRestResponse, ex);
                 }
 
-                if (iRestResponse.ErrorException != null && !String.IsNullOrEmpty(iRestResponse.ErrorException.ToString()))
+                if (restSharpRestResponse == null)
                 {
-                    response.success = false;
-                    response.details = iRestResponse.ErrorException.ToString();
-                }
-                else
-                {
-                    response.success = true;
-                    response.details = "";
+                    return errorHandling(restSharpRestResponse);
                 }
 
-                response.content = iRestResponse.Content;
-                response.httpStatusCode = iRestResponse.StatusCode.ToString();
+                if (restSharpRestResponse.ErrorException != null && !String.IsNullOrEmpty(restSharpRestResponse.ErrorException.ToString()))
+                {
+                    return errorHandling(restSharpRestResponse);
+                }
+
+                response.success = true;
+                response.details = "";
+
+                response.content = restSharpRestResponse.Content;
+                response.httpStatusCode = restSharpRestResponse.StatusCode.ToString();
 
                 return response;
             }
             catch (Exception ex)
             {
-                response.success = false;
+                return errorHandling(restSharpRestResponse, ex);
+            }
+        }
+
+        private RestSharpResponse errorHandling(RestResponse restSharpRestResponse, Exception ex = null)
+        {
+            RestSharpResponse response = new RestSharpResponse();
+
+            response.success = false;
+
+            if (ex!=null)
+            {
                 response.details = ex.ToString();
+            }
 
-                if (iRestResponse != null && !String.IsNullOrEmpty(iRestResponse.Content))
-                {
-                    response.content = iRestResponse.Content;
-                }
-
-                if (iRestResponse != null)
-                {
-                    response.httpStatusCode = iRestResponse.StatusCode.ToString();
-                }
-
+            if (restSharpRestResponse == null)
+            {
+                response.success = false;
+                response.details = "Received Http response was null";
+                response.content = "";
                 return response;
             }
+
+            if (restSharpRestResponse.ErrorException != null && !String.IsNullOrEmpty(restSharpRestResponse.ErrorException.ToString()))
+            {
+                response.success = false;
+                response.details = restSharpRestResponse.ErrorException.ToString();
+            }
+
+            if (!String.IsNullOrEmpty(restSharpRestResponse.Content))
+            {
+                response.content = restSharpRestResponse.Content;
+            }
+
+            response.httpStatusCode = restSharpRestResponse.StatusCode.ToString();
+
+            return response;
         }
     }
 }
