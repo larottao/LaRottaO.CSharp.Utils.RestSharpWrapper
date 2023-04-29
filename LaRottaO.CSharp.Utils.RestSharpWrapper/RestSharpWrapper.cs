@@ -202,26 +202,24 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
                 response.details = ex.ToString();
             }
 
-            if (restSharpRestResponse == null)
-            {
-                response.success = false;
-                response.details = "Received Http response was null";
-                response.content = "";
-                return response;
-            }
-
-            if (restSharpRestResponse.ErrorException != null && !String.IsNullOrEmpty(restSharpRestResponse.ErrorException.ToString()))
+            if (restSharpRestResponse != null &&
+                restSharpRestResponse.ErrorException != null &&
+                !String.IsNullOrEmpty(restSharpRestResponse.ErrorException.ToString()))
             {
                 response.success = false;
                 response.details = restSharpRestResponse.ErrorException.ToString();
             }
 
-            if (!String.IsNullOrEmpty(restSharpRestResponse.Content))
+            if (restSharpRestResponse != null &&
+                !String.IsNullOrEmpty(restSharpRestResponse.Content))
             {
                 response.content = restSharpRestResponse.Content;
             }
 
-            response.httpStatusCode = restSharpRestResponse.StatusCode.ToString();
+            if (restSharpRestResponse != null)
+            {
+                response.httpStatusCode = restSharpRestResponse.StatusCode.ToString();
+            }
 
             return response;
         }
