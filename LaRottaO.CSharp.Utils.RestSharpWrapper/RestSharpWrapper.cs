@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+
 using RestSharp;
 
 /*
@@ -75,6 +77,7 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
                         {
                             continue;
                         }
+
                         client.AddDefaultHeader(defaultHeader[0], defaultHeader[1]);
                         Debug.WriteLine("Added defaultHeader: " + defaultHeader[0] + " " + defaultHeader[1]);
                     }
@@ -87,6 +90,13 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
                         if (String.IsNullOrEmpty(defaultParameter[0]) || String.IsNullOrEmpty(defaultParameter[1]))
                         {
                             continue;
+                        }
+
+                        var existingParameter = client.DefaultParameters.FirstOrDefault(p => p.Name.Equals(defaultParameter[0]));
+
+                        if (existingParameter != null)
+                        {
+                            client.DefaultParameters.RemoveParameter(existingParameter);
                         }
 
                         client.AddDefaultParameter(defaultParameter[0], defaultParameter[1]);
