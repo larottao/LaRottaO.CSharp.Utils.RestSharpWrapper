@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Net.Security;
 using System.Threading.Tasks;
 
 using RestSharp;
@@ -26,11 +27,11 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
 {
     public class RestSharpWrapper
     {
-        private RestClient client = new RestClient();
+        private RestClient client;
 
         public CookieContainer getCookieContainer()
         {
-            return client.CookieContainer;
+            return client.Options.CookieContainer;
         }
 
         public enum RequiredHttpMethod
@@ -39,7 +40,7 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
         public enum RequiredBodyType
         { NO_BODY, APPLICATION_FORM_URL_ENCODED, APPLICATION_JSON, TEXT_PLAIN }
 
-        public async Task<RestSharpResponse> restRequest(RequiredHttpMethod requiredMethod, String endPointUrl, List<String[]> defaultHeadersList, List<String[]> defaultParametersList, List<String[]> queryParametersList, string body, RequiredBodyType requiredBodyType, Boolean checkSSL, int argTimeOutMs = 10000, Boolean argSwallowAnyErrors = false)
+        public async Task<RestSharpResponse> restRequest(RequiredHttpMethod requiredMethod, String endPointUrl, List<String[]> defaultHeadersList, List<String[]> defaultParametersList, List<String[]> queryParametersList, string body, RequiredBodyType requiredBodyType, Boolean checkSSL)
         {
             RestSharpResponse response = new RestSharpResponse();
             response.success = false;
@@ -59,15 +60,19 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
             try
 
             {
-                client.Options.BaseUrl = new Uri(endPointUrl);
+                var options = new RestClientOptions(endPointUrl)
+                {
+                    RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
+                };
 
                 if (!checkSSL)
                 {
-                    client.Options.RemoteCertificateValidationCallback  = (sender, certificate, chain, sslPolicyErrors) => true;
+                    client = new RestClient(options);
                 }
-
-                client.Options.ThrowOnAnyError = argSwallowAnyErrors;
-                client.Options.MaxTimeout = argTimeOutMs;
+                else
+                {
+                    client = new RestClient(endPointUrl);
+                }
 
                 if (defaultHeadersList != null)
                 {
@@ -92,19 +97,12 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
                             continue;
                         }
 
-                        var existingParameter = client.DefaultParameters.FirstOrDefault(p => p.Name.Equals(defaultParameter[0]));
-
-                        if (existingParameter != null)
-                        {
-                            client.DefaultParameters.RemoveParameter(existingParameter);
-                        }
-
                         client.AddDefaultParameter(defaultParameter[0], defaultParameter[1]);
                         Debug.WriteLine("Added defaultParameter: " + defaultParameter[0] + " " + defaultParameter[1]);
                     }
                 }
 
-                RestRequest restSharpRestRequest = new RestRequest();
+                RestRequest restSharpRestRequest = new RestRequest(endPointUrl);
 
                 if (queryParametersList != null)
                 {
@@ -124,19 +122,19 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
                 {
                     case RequiredBodyType.APPLICATION_JSON:
 
-                        restSharpRestRequest.AddParameter("application/json", body, ParameterType.RequestBody);
+                        restSharpRestRequest.AddOrUpdateParameter("application/json", body, ParameterType.RequestBody);
 
                         break;
 
                     case RequiredBodyType.APPLICATION_FORM_URL_ENCODED:
 
-                        restSharpRestRequest.AddParameter("application/x-www-form-urlencoded", body, ParameterType.RequestBody);
+                        restSharpRestRequest.AddOrUpdateParameter("application/x-www-form-urlencoded", body, ParameterType.RequestBody);
 
                         break;
 
                     case RequiredBodyType.TEXT_PLAIN:
 
-                        restSharpRestRequest.AddParameter("text/plain", body, ParameterType.RequestBody);
+                        restSharpRestRequest.AddOrUpdateParameter("text/plain", body, ParameterType.RequestBody);
 
                         break;
                 }
