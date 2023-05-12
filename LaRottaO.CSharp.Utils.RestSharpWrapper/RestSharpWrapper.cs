@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net;
-using System.Net.Security;
 using System.Threading.Tasks;
-
 using RestSharp;
 
 /*
@@ -17,7 +14,7 @@ null, //DEFAULT PARAMETERS
 null, //QUERY PARAMETERS
 null, //BODY
 RequiredBodyType.NO_BODY, //REQUIRED BODY TYPE
-false, //CHECK SSL
+false; //CHECK SSL
 true, //CREATE NEW INSTANCE
 10000, //TIMEOUT
 false); //SWALLOW ERRORS
@@ -29,9 +26,10 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
     {
         private RestClient client;
 
-        public CookieContainer getCookieContainer()
+        public CookieCollection getCookieCollection(String url)
         {
-            return client.Options.CookieContainer;
+            //Only works with RestSharp up to 108.0.3
+            return client.CookieContainer.GetCookies(new Uri(url));
         }
 
         public enum RequiredHttpMethod
@@ -50,7 +48,7 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
             if (String.IsNullOrEmpty(endPointUrl))
             {
                 response.success = false;
-                response.details = "Received Http response was null";
+                response.details = "The URL cannot be null";
                 response.content = "";
                 return response;
             }
@@ -65,13 +63,16 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
                     RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
                 };
 
-                if (!checkSSL)
+                if (client == null)
                 {
-                    client = new RestClient(options);
-                }
-                else
-                {
-                    client = new RestClient(endPointUrl);
+                    if (!checkSSL)
+                    {
+                        client = new RestClient(options);
+                    }
+                    else
+                    {
+                        client = new RestClient();
+                    }
                 }
 
                 if (defaultHeadersList != null)
