@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
+using System.Text.Json;
 using System.Threading.Tasks;
 using RestSharp;
 
@@ -231,6 +233,58 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
             }
 
             return response;
+        }
+
+        public static Tuple<Boolean, String, List<string[]>> BodyJsonToParameters(JsonElement request)
+        {
+            List<string[]> listaValores = new List<string[]>();
+
+            if (request.ValueKind == JsonValueKind.Null)
+            { return new Tuple<Boolean, String, List<string[]>>(false, Contantes.JSON_VACIO, listaValores); }
+
+            if (request.ValueKind == JsonValueKind.Undefined)
+            { return new Tuple<Boolean, String, List<string[]>>(false, Contantes.JSON_CORRUPTO_4, listaValores); }
+
+            if (String.IsNullOrEmpty(request.ToString().Trim()))
+            { return new Tuple<Boolean, String, List<string[]>>(false, Contantes.JSON_VACIO, listaValores); }
+
+            // Intenta obtener el texto JSON sin procesar
+            try
+            {
+                _ = request.GetRawText();
+            }
+            catch (JsonException)
+            { return new Tuple<Boolean, String, List<string[]>>(false, Contantes.JSON_CORRUPTO_1, listaValores); }
+            catch (Exception e)
+            { return new Tuple<Boolean, String, List<string[]>>(false, Contantes.JSON_CORRUPTO_2, listaValores); }
+
+            try
+            {
+                List<ParametrosQuery> listaParametrosQuery = new List<ParametrosQuery>();
+
+                if (request.ValueKind == JsonValueKind.Object)
+                {
+                    foreach (JsonProperty property in request.EnumerateObject())
+                    {
+                        ParametrosQuery parametro = new ParametrosQuery
+                        {
+                            nombrePropiedad = property.Name,
+                            valorPropiedad = property.Value.ToString()
+                        };
+
+                        listaParametrosQuery.Add(parametro);
+                    }
+                }
+
+                listaValores = listaParametrosQuery.Select(parametro => new string[] { parametro.nombrePropiedad, parametro.valorPropiedad }).ToList();
+
+                if (!listaValores.Any())
+                { return new Tuple<Boolean, String, List<string[]>>(false, Contantes.JSON_CORRUPTO_3, listaValores); }
+
+                return new Tuple<Boolean, String, List<string[]>>(true, String.Empty, listaValores);
+            }
+            catch (Exception e)
+            { return new Tuple<Boolean, String, List<string[]>>(true, e.Message.ToString(), listaValores); }
         }
     }
 }
