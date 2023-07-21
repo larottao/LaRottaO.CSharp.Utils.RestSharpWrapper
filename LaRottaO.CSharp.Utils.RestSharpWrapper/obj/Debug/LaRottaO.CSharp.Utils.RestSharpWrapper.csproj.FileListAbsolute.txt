@@ -21,3 +21,4 @@ C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.Res
 C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\bin\Debug\Microsoft.Bcl.AsyncInterfaces.xml
 C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\bin\Debug\System.Memory.xml
 C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\bin\Debug\System.Text.Json.xml
+C:\Repositorios\LaRottaO.CSharp.Utils.RestSharpWrapper\LaRottaO.CSharp.Utils.RestSharpWrapper\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml

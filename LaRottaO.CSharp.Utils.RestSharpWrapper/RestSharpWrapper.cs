@@ -253,10 +253,10 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
             {
                 _ = request.GetRawText();
             }
-            catch (JsonException)
-            { return new Tuple<Boolean, String, List<string[]>>(false, Contantes.JSON_CORRUPTO_1, listaValores); }
+            catch (JsonException je)
+            { return new Tuple<Boolean, String, List<string[]>>(false, Contantes.JSON_CORRUPTO_1 + " " + je.Message.ToString(), listaValores); }
             catch (Exception e)
-            { return new Tuple<Boolean, String, List<string[]>>(false, Contantes.JSON_CORRUPTO_2, listaValores); }
+            { return new Tuple<Boolean, String, List<string[]>>(false, Contantes.JSON_CORRUPTO_2 + " " + e.Message.ToString(), listaValores); }
 
             try
             {
