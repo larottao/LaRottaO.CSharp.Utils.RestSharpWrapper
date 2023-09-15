@@ -42,6 +42,7 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
 
         public async Task<RestSharpResponse> restRequest(RequiredHttpMethod requiredMethod, String endPointUrl, List<String[]> defaultHeadersList, List<String[]> defaultParametersList, List<String[]> queryParametersList, string body, RequiredBodyType requiredBodyType, Boolean checkSSL)
         {
+            
             RestSharpResponse response = new RestSharpResponse();
             response.success = false;
             response.content = "";
@@ -62,7 +63,9 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
             {
                 var options = new RestClientOptions(endPointUrl)
                 {
-                    RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
+                    RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true,
+                    ThrowOnAnyError = true,
+                    Timeout = 360000
                 };
 
                 if (client == null)
