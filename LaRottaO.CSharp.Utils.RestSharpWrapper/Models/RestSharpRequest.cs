@@ -13,9 +13,9 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper.Models
     {
         public RequiredHttpMethod requiredMethod { get; set; }
         public String endPointUrl { get; set; }
-        public List<String[]> defaultHeadersList { get; set; }
-        public List<String[]> defaultParametersList { get; set; }
-        public List<String[]> queryParametersList { get; set; }
+        public List<String[]> defaultHeadersList { get; set; } = new List<String[]>();
+        public List<String[]> defaultParametersList { get; set; } = new List<String[]>();
+        public List<String[]> queryParametersList { get; set; } = new List<String[]>();
         public string body { get; set; }
         public RequiredBodyType requiredBodyType { get; set; }
         public Boolean checkSSL { get; set; }
