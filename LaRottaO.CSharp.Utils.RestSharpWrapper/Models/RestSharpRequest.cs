@@ -15,9 +15,12 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper.Models
         public String endPointUrl { get; set; }
         public List<String[]> defaultHeadersList { get; set; } = new List<String[]>();
         public List<String[]> defaultParametersList { get; set; } = new List<String[]>();
+        public List<String[]> parametersList { get; set; } = new List<String[]>();
         public List<String[]> queryParametersList { get; set; } = new List<String[]>();
         public string body { get; set; }
         public RequiredBodyType requiredBodyType { get; set; }
         public Boolean checkSSL { get; set; }
+
+        public int maxTimeout;
     }
 }

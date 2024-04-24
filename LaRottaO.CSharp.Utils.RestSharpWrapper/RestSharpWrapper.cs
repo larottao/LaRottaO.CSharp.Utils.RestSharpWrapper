@@ -18,14 +18,14 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
             return client.CookieContainer.GetCookies(new Uri(url));
         }
 
-        public async Task<RestSharpResponse> makeRestRequest(RestSharpRequest request)
+        public async Task<RestSharpResponse> makeRestRequest(RestSharpRequest wrapperRequest)
         {
             RestSharpResponse response = new RestSharpResponse();
             response.success = false;
             response.content = "";
             response.details = "";
 
-            if (String.IsNullOrEmpty(request.endPointUrl))
+            if (String.IsNullOrEmpty(wrapperRequest.endPointUrl))
             {
                 response.success = false;
                 response.details = $"HTTP REQUEST ERROR: ENDPOINT URL IS NULL";
@@ -38,16 +38,16 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
             try
 
             {
-                var options = new RestClientOptions(request.endPointUrl)
+                var options = new RestClientOptions(wrapperRequest.endPointUrl)
                 {
                     RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true,
                     ThrowOnAnyError = true,
-                    MaxTimeout = 360000
+                    MaxTimeout = wrapperRequest.maxTimeout
                 };
 
                 if (client == null)
                 {
-                    if (!request.checkSSL)
+                    if (!wrapperRequest.checkSSL)
                     {
                         client = new RestClient(options);
                     }
@@ -57,9 +57,9 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
                     }
                 }
 
-                if (request.defaultHeadersList != null)
+                if (wrapperRequest.defaultHeadersList.Count > 0)
                 {
-                    foreach (String[] defaultHeader in request.defaultHeadersList)
+                    foreach (String[] defaultHeader in wrapperRequest.defaultHeadersList)
                     {
                         if (String.IsNullOrEmpty(defaultHeader[0]) || String.IsNullOrEmpty(defaultHeader[1]))
                         {
@@ -71,9 +71,9 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
                     }
                 }
 
-                if (request.defaultParametersList != null)
+                if (wrapperRequest.defaultParametersList.Count > 0)
                 {
-                    foreach (String[] defaultParameter in request.defaultParametersList)
+                    foreach (String[] defaultParameter in wrapperRequest.defaultParametersList)
                     {
                         if (String.IsNullOrEmpty(defaultParameter[0]) || String.IsNullOrEmpty(defaultParameter[1]))
                         {
@@ -85,46 +85,65 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
                     }
                 }
 
-                RestRequest restSharpRestRequest = new RestRequest(request.endPointUrl);
 
-                if (request.queryParametersList != null)
+                RestRequest restSharpRestRequest = new RestRequest(wrapperRequest.endPointUrl);
+
+
+                /*
+                ICollection<KeyValuePair<String, String>> headersList = new List<KeyValuePair<String, String>>();
+
+                if (wrapperRequest.defaultHeadersList != null)
                 {
-                    foreach (String[] queryParameter in request.queryParametersList)
+                    foreach (String[] queryParameter in wrapperRequest.queryParametersList)
                     {
-                        if (String.IsNullOrEmpty(queryParameter[0]) || String.IsNullOrEmpty(queryParameter[1]))
-                        {
-                            continue;
-                        }
+                        restSharpRestRequest.AddHeaders(queryParameter[0], queryParameter[1]);
+                        Debug.WriteLine($"DEBUG: ADDED QUERY PARAMETER: KEY {queryParameter[0]} VALUE {queryParameter[1]}");
+                    }
+                }
+                */
 
+                if (wrapperRequest.parametersList.Count > 0)
+                {
+                    foreach (String[] parameter in wrapperRequest.parametersList)
+                    {
+                        restSharpRestRequest.AddParameter(parameter[0], parameter[1]);
+                        Debug.WriteLine($"DEBUG: ADDED PARAMETER: KEY {parameter[0]} VALUE {parameter[1]}");
+                    }
+                }
+
+                if (wrapperRequest.queryParametersList.Count > 0)
+                {
+                    foreach (String[] queryParameter in wrapperRequest.parametersList)
+                    {                    
                         restSharpRestRequest.AddQueryParameter(queryParameter[0], queryParameter[1]);
                         Debug.WriteLine($"DEBUG: ADDED QUERY PARAMETER: KEY {queryParameter[0]} VALUE {queryParameter[1]}");
                     }
                 }
 
-                switch (request.requiredBodyType)
+                switch (wrapperRequest.requiredBodyType)
                 {
                     case RequiredBodyType.APPLICATION_JSON:
 
-                        restSharpRestRequest.AddOrUpdateParameter("application/json", request.body, ParameterType.RequestBody);
+                        restSharpRestRequest.AddOrUpdateParameter("application/json", wrapperRequest.body, ParameterType.RequestBody);
 
                         break;
 
                     case RequiredBodyType.APPLICATION_FORM_URL_ENCODED:
 
-                        restSharpRestRequest.AddOrUpdateParameter("application/x-www-form-urlencoded", request.body, ParameterType.RequestBody);
+                        restSharpRestRequest.AddOrUpdateParameter("application/x-www-form-urlencoded", wrapperRequest.body, ParameterType.RequestBody);
 
                         break;
 
                     case RequiredBodyType.TEXT_PLAIN:
 
-                        restSharpRestRequest.AddOrUpdateParameter("text/plain", request.body, ParameterType.RequestBody);
+                        restSharpRestRequest.AddOrUpdateParameter("text/plain", wrapperRequest.body, ParameterType.RequestBody);
 
                         break;
                 }
 
                 try
                 {
-                    switch (request.requiredMethod)
+                    switch (wrapperRequest.requiredMethod)
                     {
                         case RequiredHttpMethod.GET:
                             restSharpRestResponse = await client.ExecuteAsync(restSharpRestRequest, Method.Get);
