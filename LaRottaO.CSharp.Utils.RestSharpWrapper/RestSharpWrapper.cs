@@ -18,7 +18,7 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
             return client.CookieContainer.GetCookies(new Uri(url));
         }
 
-        public async Task<RestSharpResponse> restRequest(RestSharpRequest request)
+        public async Task<RestSharpResponse> makeRestRequest(RestSharpRequest request)
         {
             RestSharpResponse response = new RestSharpResponse();
             response.success = false;
