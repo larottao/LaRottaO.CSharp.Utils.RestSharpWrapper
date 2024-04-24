@@ -61,9 +61,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Contantes.cs" />
-    <Compile Include="ParametrosQuery.cs" />
-    <Compile Include="RestSharpResponse.cs" />
+    <Compile Include="Models\RestSharpRequest.cs" />
+    <Compile Include="Utils\ConvertJsonBodyToParameters.cs" />
+    <Compile Include="Models\RestSharpResponse.cs" />
     <Compile Include="RestSharpWrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
