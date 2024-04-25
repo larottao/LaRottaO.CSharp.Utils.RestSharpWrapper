@@ -40,7 +40,7 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
             {
                 var options = new RestClientOptions(wrapperRequest.endPointUrl)
                 {
-                    RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true,
+                    RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => !wrapperRequest.checkSSL,
                     ThrowOnAnyError = true,
                     MaxTimeout = wrapperRequest.maxTimeout
                 };
@@ -85,22 +85,7 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
                     }
                 }
 
-
                 RestRequest restSharpRestRequest = new RestRequest(wrapperRequest.endPointUrl);
-
-
-                /*
-                ICollection<KeyValuePair<String, String>> headersList = new List<KeyValuePair<String, String>>();
-
-                if (wrapperRequest.defaultHeadersList != null)
-                {
-                    foreach (String[] queryParameter in wrapperRequest.queryParametersList)
-                    {
-                        restSharpRestRequest.AddHeaders(queryParameter[0], queryParameter[1]);
-                        Debug.WriteLine($"DEBUG: ADDED QUERY PARAMETER: KEY {queryParameter[0]} VALUE {queryParameter[1]}");
-                    }
-                }
-                */
 
                 if (wrapperRequest.parametersList.Count > 0)
                 {
@@ -114,7 +99,7 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper
                 if (wrapperRequest.queryParametersList.Count > 0)
                 {
                     foreach (String[] queryParameter in wrapperRequest.parametersList)
-                    {                    
+                    {
                         restSharpRestRequest.AddQueryParameter(queryParameter[0], queryParameter[1]);
                         Debug.WriteLine($"DEBUG: ADDED QUERY PARAMETER: KEY {queryParameter[0]} VALUE {queryParameter[1]}");
                     }

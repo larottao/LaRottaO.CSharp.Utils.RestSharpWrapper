@@ -20,7 +20,6 @@ namespace LaRottaO.CSharp.Utils.RestSharpWrapper.Models
         public string body { get; set; }
         public RequiredBodyType requiredBodyType { get; set; }
         public Boolean checkSSL { get; set; }
-
-        public int maxTimeout;
+        public int maxTimeout { get; set; }
     }
 }
